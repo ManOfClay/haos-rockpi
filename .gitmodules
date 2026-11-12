@@ -1,4 +1,4 @@
 [submodule "buildroot"]
 	path = buildroot
-	url = git@github.com:citruz/buildroot.git
-	branch = 2024.02.x-haos
+	url = https://github.com/ManOfClay/buildroot.git
+	branch = buildroot_rockpi_18.5
