@@ -39,7 +39,7 @@ jobs:
       channel: ${{ steps.channel.outputs.channel }}
       hassio_channel_option: ${{ steps.channel.outputs.hassio_channel_option }}
       matrix: ${{ steps.generate_matrix.outputs.result }}
-      build_container_image: ghcr.io/${{ github.repository_owner }}/haos-builder@${{ steps.build_haos_builder.outputs.digest }}
+      build_container_image: ghcr.io/${{ steps.owner.outputs.owner }}/haos-builder@${{ steps.build_haos_builder.outputs.digest }}
       publish_build: ${{ steps.check_publish.outputs.publish_build }}
       self_signed_cert: ${{ steps.generate_signing_key.outputs.self_signed_cert }}
     steps:
@@ -192,6 +192,10 @@ jobs:
               return { "board": buildBoards }
             }
 
+      - name: Lowercase registry owner
+        id: owner
+        run: echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
       - name: Log in to the GitHub container registry
@@ -206,9 +210,9 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          tags: ghcr.io/${{ github.repository_owner }}/haos-builder
-          cache-from: ghcr.io/${{ github.repository_owner }}/haos-builder:cache-${{ steps.version.outputs.version_main }}
-          cache-to: ghcr.io/${{ github.repository_owner }}/haos-builder:cache-${{ steps.version.outputs.version_main }}
+          tags: ghcr.io/${{ steps.owner.outputs.owner }}/haos-builder
+          cache-from: ghcr.io/${{ steps.owner.outputs.owner }}/haos-builder:cache-${{ steps.version.outputs.version_main }}
+          cache-to: ghcr.io/${{ steps.owner.outputs.owner }}/haos-builder:cache-${{ steps.version.outputs.version_main }}
           push: true
 
       - name: Generate self-signed certificate
