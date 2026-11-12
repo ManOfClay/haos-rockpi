@@ -231,7 +231,7 @@ jobs:
           RAUC_CERTIFICATE: ${{ secrets.RAUC_CERTIFICATE }}
         if: env.RAUC_CERTIFICATE != ''
         run: |
-          echo -e "-----BEGIN CERTIFICATE-----\n${RAUC_CERTIFICATE}\n-----END CERTIFICATE-----" > signing-cert.pem
+          scripts/pem-from-secret.sh CERTIFICATE RAUC_CERTIFICATE signing-cert.pem
           # 760 days ~ 25 months (the OS support window, with margin)
           scripts/check-signing-validity.sh signing-cert.pem buildroot-external/ota/rockpi-ca.pem 760
           rm -f signing-cert.pem
@@ -285,8 +285,8 @@ jobs:
           RAUC_CERTIFICATE: ${{ secrets.RAUC_CERTIFICATE }}
           RAUC_PRIVATE_KEY: ${{ secrets.RAUC_PRIVATE_KEY }}
         run: |
-          echo -e "-----BEGIN CERTIFICATE-----\n${RAUC_CERTIFICATE}\n-----END CERTIFICATE-----" > cert.pem
-          echo -e "-----BEGIN PRIVATE KEY-----\n${RAUC_PRIVATE_KEY}\n-----END PRIVATE KEY-----" > key.pem
+          scripts/pem-from-secret.sh CERTIFICATE RAUC_CERTIFICATE cert.pem
+          scripts/pem-from-secret.sh "PRIVATE KEY" RAUC_PRIVATE_KEY key.pem
 
       - name: Get self-signed certificate from the prepare job
         if: ${{ needs.prepare.outputs.self_signed_cert == 'true' }}
